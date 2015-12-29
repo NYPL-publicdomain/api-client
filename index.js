@@ -20,7 +20,7 @@ var requestStream = function (options) {
 }
 
 var getPageStreams = function (uuid, token, perPage, items) {
-  var count = 2//Math.ceil(items / perPage)
+  var count = Math.ceil(items / perPage)
   return Array.from({length: count}, (v, page) => getRequestOptions(uuid, token, perPage, page))
     .map(options => requestStream(options))
 }
@@ -36,7 +36,7 @@ var getCaptures = function (body) {
  * @param {String} options.token Digital Collections API access token
  * @param {number} [options.perPage=50] items per page, higher means less requests. Max. 500
  */
- module.exports.captures = function (options) {
+module.exports.captures = function (options) {
   if (!options.uuid) {
     throw new Error('Please supply a UUID in options.uuid')
   }
