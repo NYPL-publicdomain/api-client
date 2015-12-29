@@ -4,6 +4,8 @@ A command line interface and Node.js module for [The New York Public Library Dig
 
 A valid API access token is needed to use this utility: http://api.repo.nypl.org/.
 
+__Warning__: some Digital Collections items or collections contain __a lot__ of captures. This tool will automatically use the API's pagination to download them all (50 per page, by default). Be careful, or you'll quickly hit your rate limit!
+
 ## Standalone usage
 
 Installation:
