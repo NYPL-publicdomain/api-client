@@ -1,7 +1,7 @@
 {
   "name": "digital-collections",
   "version": "0.0.1",
-  "description": "API client and JavaScript module to access the NYPL Digital Collections API",
+  "description": "API client and Node.js module to access the NYPL Digital Collections API",
   "main": "index.js",
   "bin": {
     "digital-collections": "index.js"
