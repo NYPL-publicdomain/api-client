@@ -8,18 +8,13 @@ var argv = require('minimist')(process.argv.slice(2), {
   }
 })
 var fs = require('fs')
+var lion = require('./lion')
 var JSONStream = require('JSONStream')
 var digitalCollections = require('./')
 
-if (!argv.t) {
-  console.error('Error: please supply an NYPL API token with the -t option\n')
-}
-
-if (!argv.u) {
-  console.error('Error: please supply a UUID with the -u option\n')
-}
-
 if (process.stdin.isTTY && (!argv.t || !argv.u)) {
+  console.error(lion.join('\n') + '\n')
+
   console.error('NYPL Digital Collections API client - see https://github.com/nypl-publicdomain/api-client\n' +
     '\n' +
     'Usage: digital-collections -t API-TOKEN -u UUID [-o file] \n' +
@@ -28,6 +23,14 @@ if (process.stdin.isTTY && (!argv.t || !argv.u)) {
     '  -o, --output    output file, default is stdout\n' +
     '\n' +
     'Go to http://digitalcollections.nypl.org/ to browse NYPL\'s Digital Collections')
+
+  if (!argv.t && argv.u) {
+    console.error('\nError: please supply an NYPL API token with the -t option')
+  }
+
+  if (!argv.u && argv.t) {
+    console.error('\nError: please supply a UUID with the -u option')
+  }
 
   process.exit(1)
 }
