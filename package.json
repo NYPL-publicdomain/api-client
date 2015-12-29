@@ -1,0 +1,31 @@
+{
+  "name": "digital-collections",
+  "version": "0.0.1",
+  "description": "API client and JavaScript module to access the NYPL Digital Collections API",
+  "main": "index.js",
+  "bin": {
+    "digital-collections": "index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nypl-publicdomain/api-client"
+  },
+  "scripts": {
+    "lint": "standard",
+    "docs-readme": "documentation-readme -s API",
+    "test": "npm run lint && tap --cov test/*.js"
+  },
+  "author": "Bert Spaan",
+  "license": "MIT",
+  "dependencies": {
+    "JSONStream": "^1.0.7",
+    "highland": "^2.5.1",
+    "minimist": "^1.2.0",
+    "request": "^2.67.0"
+  },
+  "devDependencies": {
+    "documentation-readme": "^2.0.0",
+    "standard": "^5.4.1",
+    "tap": "^2.1.1"
+  }
+}
