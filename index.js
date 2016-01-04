@@ -2,10 +2,13 @@ var H = require('highland')
 var request = require('request')
 
 var getRequestOptions = function (uuid, token, perPage, page) {
+  var url = 'http://api.repo.nypl.org/api/v1/items/' + uuid + '.json?withTitles=yes&per_page=' + perPage + '&page=' + page
+  var auth = 'Token token="' + token + '"'
+
   return {
-    url: `http://api.repo.nypl.org/api/v1/items/${uuid}.json?withTitles=yes&per_page=${perPage}&page=${page}`,
+    url: url,
     headers: {
-      Authorization: `Token token="${token}"`
+      Authorization: auth
     }
   }
 }
@@ -21,8 +24,15 @@ var requestStream = function (options) {
 
 var getPageStreams = function (uuid, token, perPage, items) {
   var count = Math.ceil(items / perPage)
-  return Array.from({length: count}, (v, page) => getRequestOptions(uuid, token, perPage, page))
-    .map(options => requestStream(options))
+
+  var streams = []
+  for (var page = 0; page < count; page++) {
+    streams.push(getRequestOptions(uuid, token, perPage, page))
+  }
+
+  return streams.map(function(options) {
+    return requestStream(options)
+  })
 }
 
 var getCaptures = function (body) {
@@ -54,7 +64,9 @@ module.exports.captures = function (options) {
   var perPage = options.perPage || 100
 
   return requestStream(getRequestOptions(options.uuid, options.token, 1, 1))
-    .map(body => body.nyplAPI.request.totalPages)
+    .map(function(body) {
+      return body.nyplAPI.request.totalPages;
+    })
     .map(H.curry(getPageStreams, options.uuid, options.token, perPage))
     .flatten()
     .map(getCaptures)
