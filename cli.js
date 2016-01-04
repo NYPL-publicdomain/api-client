@@ -12,7 +12,21 @@ var lion = require('./lion')
 var JSONStream = require('JSONStream')
 var digitalCollections = require('./')
 
-if (process.stdin.isTTY && (!argv.t || !argv.u)) {
+var errors = []
+var uuid = argv.u
+var token = argv.t || process.env.DIGITAL_COLLECTIONS_TOKEN
+
+if (!token || typeof (token) !== 'string') {
+  errors.push('Error: please supply an NYPL API token with the -t option, or set the DIGITAL_COLLECTIONS_TOKEN environment variable')
+  token = null
+}
+
+if (!uuid || typeof (uuid) !== 'string') {
+  errors.push('Error: please supply a UUID with the -u option')
+  uuid = null
+}
+
+if (process.stdin.isTTY && !(token && uuid)) {
   console.error(lion.join('\n') + '\n')
 
   console.error('NYPL Digital Collections API client - see https://github.com/nypl-publicdomain/api-client\n' +
@@ -24,20 +38,16 @@ if (process.stdin.isTTY && (!argv.t || !argv.u)) {
     '\n' +
     'Go to http://digitalcollections.nypl.org/ to browse NYPL\'s Digital Collections')
 
-  if (!argv.t && argv.u) {
-    console.error('\nError: please supply an NYPL API token with the -t option')
-  }
-
-  if (!argv.u && argv.t) {
-    console.error('\nError: please supply a UUID with the -u option')
+  if (errors.length) {
+    console.error('\n' + errors.join('\n'))
   }
 
   process.exit(1)
 }
 
 digitalCollections.captures({
-  uuid: argv.u,
-  token: argv.t
+  uuid: uuid,
+  token: token
 })
   .pipe(JSONStream.stringify())
   .pipe(argv.o ? fs.createWriteStream(argv.o, 'utf8') : process.stdout)

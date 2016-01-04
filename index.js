@@ -32,8 +32,8 @@ var getCaptures = function (body) {
 /**
  * Returns a stream of capture objects
  * @param {Object} options
- * @param {String} options.uuid UUID of Digital Collection item or collection
- * @param {String} options.token Digital Collections API access token
+ * @param {String} options.uuid UUID of a Collection, Sub-container or Item
+ * @param {String} [options.token] Digital Collections API access token
  * @param {number} [options.perPage=50] items per page, higher means less requests. Max. 500
  */
 module.exports.captures = function (options) {
@@ -41,15 +41,17 @@ module.exports.captures = function (options) {
     throw new Error('Please supply a UUID in options.uuid')
   }
 
-  if (!options.token) {
-    throw new Error('Please supply an API token in options.token')
+  var token = options.token || process.env.DIGITAL_COLLECTIONS_TOKEN
+
+  if (!token) {
+    throw new Error('Please supply an API token in options.token, or set the DIGITAL_COLLECTIONS_TOKEN environment variable')
   }
 
   if (options.perPage && options.perPage > 500 || options.perPage < 1) {
     throw new Error('options.perPage should be between 1 and 500')
   }
 
-  var perPage = options.perPage || 50
+  var perPage = options.perPage || 100
 
   return requestStream(getRequestOptions(options.uuid, options.token, 1, 1))
     .map(body => body.nyplAPI.request.totalPages)
