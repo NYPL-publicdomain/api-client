@@ -1,0 +1,15 @@
+# TODO: make tests which check output for all objects in this YAML:
+collection:
+  uuid: 0146e060-c530-012f-1e6f-58d385a7bc34
+  sub-containers:
+    - uuid: 46278380-c5ea-012f-65f0-58d385a7bc34
+      sub-containers:
+        - uuid: 467d4590-c5ea-012f-6ea9-58d385a7bc34
+          sub-containers:
+            - uuid: 0eeb7b00-c5ec-012f-377e-58d385a7bc34
+              items:
+                - uuid: 587963e0-c5ed-012f-2954-58d385a7bc34
+                  captures:
+                    - uuid: c3903dcb-cfc3-6201-e040-e00a180642e6
+                    - uuid: c3903dcb-cfdd-6201-e040-e00a180642e6
+                    - uuid: c3903dcb-cfe7-6201-e040-e00a180642e6
