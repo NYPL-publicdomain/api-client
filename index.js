@@ -26,7 +26,7 @@ var getPageStreams = function (uuid, token, perPage, items) {
   var count = Math.ceil(items / perPage)
 
   var streams = []
-  for (var page = 0; page < count; page++) {
+  for (var page = 1; page <= count; page++) {
     streams.push(getRequestOptions(uuid, token, perPage, page))
   }
 
