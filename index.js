@@ -94,7 +94,7 @@ module.exports.captures = function (options) {
 }
 
 /**
- * Returns a stream of capture objects
+ * Returns MODS records for capture
  * @param {Object} options
  * @param {String} options.uuid UUID of an Item
  * @param {String} [options.token] Digital Collections API access token

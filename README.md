@@ -68,3 +68,14 @@ Returns a stream of capture objects
     -   `options.uuid` **String** UUID of a Collection, Sub-container or Item
     -   `options.token` **[String]** Digital Collections API access token
     -   `options.perPage` **[number]** items per page, higher means less requests. Max. 500 (optional, default `50`)
+
+## mods
+
+Returns MODS records for capture
+
+**Parameters**
+
+-   `options` **Object** 
+    -   `options.uuid` **String** UUID of an Item
+    -   `options.token` **[String]** Digital Collections API access token
+-   `callback`  
