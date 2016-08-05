@@ -1,8 +1,8 @@
 var H = require('highland')
 var request = require('request')
 
-var getRequestOptions = function (uuid, token, perPage, page) {
-  var url = 'http://api.repo.nypl.org/api/v1/items/' + uuid + '.json?withTitles=yes&per_page=' + perPage + '&page=' + page
+var getRequestOptions = function (path, token) {
+  var url = 'http://api.repo.nypl.org/api/v1/' + path
   var auth = 'Token token="' + token + '"'
 
   return {
@@ -11,6 +11,15 @@ var getRequestOptions = function (uuid, token, perPage, page) {
       Authorization: auth
     }
   }
+}
+
+var getCapturesRequestOptions = function (uuid, token, perPage, page) {
+  var path = 'items/' + uuid + '.json?withTitles=yes&per_page=' + perPage + '&page=' + page
+  return getRequestOptions(path, token)
+}
+
+var getMODSRequestOptions = function (uuid, token) {
+  return getRequestOptions('items/mods_captures/' + uuid, token)
 }
 
 var requestStream = function (options) {
@@ -27,7 +36,7 @@ var getPageStreams = function (uuid, token, perPage, items) {
 
   var streams = []
   for (var page = 1; page <= count; page++) {
-    streams.push(getRequestOptions(uuid, token, perPage, page))
+    streams.push(getCapturesRequestOptions(uuid, token, perPage, page))
   }
 
   return streams.map(function(options) {
@@ -39,6 +48,24 @@ var getCaptures = function (body) {
   return body.nyplAPI.response.capture
 }
 
+var checkUuid = function(options) {
+  if (!options.uuid) {
+    throw new Error('Please supply a UUID in options.uuid')
+  }
+
+  return options.uuid
+}
+
+var checkToken = function(options) {
+  var token = options.token || process.env.DIGITAL_COLLECTIONS_TOKEN
+
+  if (!token) {
+    throw new Error('Please supply an API token in options.token, or set the DIGITAL_COLLECTIONS_TOKEN environment variable')
+  }
+
+  return token
+}
+
 /**
  * Returns a stream of capture objects
  * @param {Object} options
@@ -47,15 +74,8 @@ var getCaptures = function (body) {
  * @param {number} [options.perPage=50] items per page, higher means less requests. Max. 500
  */
 module.exports.captures = function (options) {
-  if (!options.uuid) {
-    throw new Error('Please supply a UUID in options.uuid')
-  }
-
-  var token = options.token || process.env.DIGITAL_COLLECTIONS_TOKEN
-
-  if (!token) {
-    throw new Error('Please supply an API token in options.token, or set the DIGITAL_COLLECTIONS_TOKEN environment variable')
-  }
+  var uuid = checkUuid(options)
+  var token = checkToken(options)
 
   if (options.perPage && options.perPage > 500 || options.perPage < 1) {
     throw new Error('options.perPage should be between 1 and 500')
@@ -63,7 +83,7 @@ module.exports.captures = function (options) {
 
   var perPage = options.perPage || 100
 
-  return requestStream(getRequestOptions(options.uuid, options.token, 1, 1))
+  return requestStream(getCapturesRequestOptions(options.uuid, options.token, 1, 1))
     .map(function(body) {
       return body.nyplAPI.request.totalPages;
     })
@@ -71,4 +91,29 @@ module.exports.captures = function (options) {
     .flatten()
     .map(getCaptures)
     .flatten()
+}
+
+/**
+ * Returns MODS records for capture
+ * @param {Object} options
+ * @param {String} options.uuid UUID of an Item
+ * @param {String} [options.token] Digital Collections API access token
+ */
+module.exports.mods = function (options, callback) {
+  var uuid = checkUuid(options)
+  var token = checkToken(options)
+
+  request(getMODSRequestOptions(uuid, token), (error, response, body) => {
+    if (error) {
+      callback(error)
+      return
+    }
+
+    var body = JSON.parse(body)
+    if (body && body.nyplAPI && body.nyplAPI.response && body.nyplAPI.response.mods) {
+      callback(null, body.nyplAPI.response.mods)
+    } else {
+      callback()
+    }
+  })
 }
