@@ -8,7 +8,8 @@ This module is a work in progress, and currenly only supports one of the Digital
 
 Supported methods:
 
--   Return **all** [captures](http://api.repo.nypl.org/#method4) for a given Collection, Sub-container or Item UUID.
+- Return **all** [captures](http://api.repo.nypl.org/#method4) for a given Collection, Sub-container or Item UUID.
+- Return MODS records for Item UUID.
 
 **Note**: The API only returns captures with [image links](http://api.repo.nypl.org/#image-links) if the captures are in the public domain.
 
@@ -64,7 +65,7 @@ Returns a stream of capture objects
 
 **Parameters**
 
--   `options` **Object** 
+-   `options` **Object**
     -   `options.uuid` **String** UUID of a Collection, Sub-container or Item
     -   `options.token` **[String]** Digital Collections API access token
     -   `options.perPage` **[number]** items per page, higher means less requests. Max. 500 (optional, default `50`)
@@ -75,7 +76,7 @@ Returns MODS records for capture
 
 **Parameters**
 
--   `options` **Object** 
+-   `options` **Object**
     -   `options.uuid` **String** UUID of an Item
     -   `options.token` **[String]** Digital Collections API access token
 -   `callback`  
