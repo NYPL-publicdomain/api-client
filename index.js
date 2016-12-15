@@ -39,7 +39,7 @@ var getPageStreams = function (uuid, token, perPage, items) {
     streams.push(getCapturesRequestOptions(uuid, token, perPage, page))
   }
 
-  return streams.map(function(options) {
+  return streams.map(function (options) {
     return requestStream(options)
   })
 }
@@ -48,7 +48,7 @@ var getCaptures = function (body) {
   return body.nyplAPI.response.capture
 }
 
-var checkUuid = function(options) {
+var checkUuid = function (options) {
   if (!options.uuid) {
     throw new Error('Please supply a UUID in options.uuid')
   }
@@ -56,7 +56,7 @@ var checkUuid = function(options) {
   return options.uuid
 }
 
-var checkToken = function(options) {
+var checkToken = function (options) {
   var token = options.token || process.env.DIGITAL_COLLECTIONS_TOKEN
 
   if (!token) {
@@ -83,11 +83,11 @@ module.exports.captures = function (options) {
 
   var perPage = options.perPage || 100
 
-  return requestStream(getCapturesRequestOptions(options.uuid, options.token, 1, 1))
-    .map(function(body) {
-      return body.nyplAPI.request.totalPages;
+  return requestStream(getCapturesRequestOptions(uuid, token, 1, 1))
+    .map(function (body) {
+      return body.nyplAPI.request.totalPages
     })
-    .map(H.curry(getPageStreams, options.uuid, options.token, perPage))
+    .map(H.curry(getPageStreams, uuid, token, perPage))
     .flatten()
     .map(getCaptures)
     .flatten()
@@ -109,9 +109,15 @@ module.exports.mods = function (options, callback) {
       return
     }
 
-    var body = JSON.parse(body)
-    if (body && body.nyplAPI && body.nyplAPI.response && body.nyplAPI.response.mods) {
-      callback(null, body.nyplAPI.response.mods)
+    var parsedBody
+    try {
+      parsedBody = JSON.parse(body)
+    } catch (parseError) {
+      callback(parseError)
+    }
+
+    if (parsedBody && parsedBody.nyplAPI && parsedBody.nyplAPI.response && parsedBody.nyplAPI.response.mods) {
+      callback(null, parsedBody.nyplAPI.response.mods)
     } else {
       callback()
     }

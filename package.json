@@ -1,6 +1,6 @@
 {
   "name": "digital-collections",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "API client and Node.js module to access the NYPL Digital Collections API",
   "main": "index.js",
   "bin": {
@@ -13,7 +13,7 @@
   "scripts": {
     "lint": "standard",
     "docs-readme": "documentation-readme -s API",
-    "test": "npm run lint && tap --cov test/*.js"
+    "test": "npm run lint"
   },
   "author": "Bert Spaan",
   "license": "MIT",
