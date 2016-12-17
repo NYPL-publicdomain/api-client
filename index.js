@@ -22,6 +22,10 @@ var getMODSRequestOptions = function (uuid, token) {
   return getRequestOptions('items/mods_captures/' + uuid, token)
 }
 
+var getUuidForLocalIdentifierOptions = function (fieldName, value, token) {
+  return getRequestOptions('items/' + fieldName + '/' + value, token)
+}
+
 var requestStream = function (options) {
   return H(request(options))
     .stopOnError(function (err) {
@@ -123,3 +127,39 @@ module.exports.mods = function (options, callback) {
     }
   })
 }
+
+/**
+ * Returns UUID for local identifier
+ * @param {Object} options
+ * @param {String} options.fieldName a valid local identifier.
+ * @param {String} options.value value of local identifier
+ * @param {String} [options.token] Digital Collections API access token
+ */
+module.exports.uuidForLocalIdentifier = function (options, callback) {
+  var token = checkToken(options)
+
+  var fieldName = options.fieldName
+  var value = options.value
+
+
+  request(getUuidForLocalIdentifierOptions(fieldName, value, token), (error, response, body) => {
+    if (error) {
+      callback(error)
+      return
+    }
+
+    var parsedBody
+    try {
+      parsedBody = JSON.parse(body)
+    } catch (parseError) {
+      callback(parseError)
+    }
+
+    if (parsedBody && parsedBody.nyplAPI && parsedBody.nyplAPI.response) {
+      callback(null, parsedBody.nyplAPI.response.uuid)
+    } else {
+      callback()
+    }
+  })
+}
+
