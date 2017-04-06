@@ -104,8 +104,16 @@ module.exports.captures = function (options) {
  * @param {String} [options.token] Digital Collections API access token
  */
 module.exports.mods = function (options, callback) {
-  var uuid = checkUuid(options)
-  var token = checkToken(options)
+  let uuid
+  let token
+
+  try {
+    uuid = checkUuid(options)
+    token = checkToken(options)
+  } catch (err) {
+    callback(err)
+    return
+  }
 
   request(getMODSRequestOptions(uuid, token), (error, response, body) => {
     if (error) {
@@ -118,6 +126,7 @@ module.exports.mods = function (options, callback) {
       parsedBody = JSON.parse(body)
     } catch (parseError) {
       callback(parseError)
+      return
     }
 
     if (parsedBody && parsedBody.nyplAPI && parsedBody.nyplAPI.response && parsedBody.nyplAPI.response.mods) {
@@ -136,11 +145,16 @@ module.exports.mods = function (options, callback) {
  * @param {String} [options.token] Digital Collections API access token
  */
 module.exports.uuidForLocalIdentifier = function (options, callback) {
-  var token = checkToken(options)
+  let token
+  try {
+    token = checkToken(options)
+  } catch (err) {
+    callback(err)
+    return
+  }
 
-  var fieldName = options.fieldName
-  var value = options.value
-
+  const fieldName = options.fieldName
+  const value = options.value
 
   request(getUuidForLocalIdentifierOptions(fieldName, value, token), (error, response, body) => {
     if (error) {
@@ -148,11 +162,12 @@ module.exports.uuidForLocalIdentifier = function (options, callback) {
       return
     }
 
-    var parsedBody
+    let parsedBody
     try {
       parsedBody = JSON.parse(body)
     } catch (parseError) {
       callback(parseError)
+      return
     }
 
     if (parsedBody && parsedBody.nyplAPI && parsedBody.nyplAPI.response) {
@@ -162,4 +177,3 @@ module.exports.uuidForLocalIdentifier = function (options, callback) {
     }
   })
 }
-
