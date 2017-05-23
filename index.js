@@ -28,9 +28,6 @@ var getUuidForLocalIdentifierOptions = function (fieldName, value, token) {
 
 var requestStream = function (options) {
   return H(request(options))
-    .stopOnError(function (err) {
-      console.error(err)
-    })
     .split()
     .map(JSON.parse)
 }
